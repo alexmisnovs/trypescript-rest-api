@@ -2,15 +2,13 @@ import mongoose from "mongoose";
 import bcrypt from "bcrypt";
 import config from "config";
 
-export interface HookNextFunction {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  (error?: Error): any;
-}
-
-export interface IUser extends mongoose.Document {
+export interface IUserInput {
   email: string;
   name: string;
   password: string;
+}
+
+export interface IUser extends IUserInput, mongoose.Document {
   createdAt: Date;
   updatedAt: Date;
   comparePassword(providedPassword: string): Promise<boolean>;
@@ -42,7 +40,7 @@ userSchema.pre("save", async function (next) {
 
   if (!user.isModified("password")) return next();
 
-  const salt = await bcrypt.genSalt(config.get<number>("saltWorkNumber"));
+  const salt = await bcrypt.genSalt(config.get<number>("saltWorkFactor"));
   const hash = await bcrypt.hashSync(user.password, salt);
 
   user.password = hash;
