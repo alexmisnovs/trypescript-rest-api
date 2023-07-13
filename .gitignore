@@ -3,3 +3,4 @@ node_modules
 build
 config/production.ts
 config/default.ts
+config/test.ts
