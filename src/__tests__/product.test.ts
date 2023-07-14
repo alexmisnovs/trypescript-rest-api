@@ -29,7 +29,7 @@ export const mockUserPayload: IMockUser = {
 
 const app = createServer();
 
-describe("product", () => {
+describe("Product", () => {
   beforeAll(async () => {
     const mongoServer = await MongoMemoryServer.create();
     await mongoose.connect(mongoServer.getUri());
