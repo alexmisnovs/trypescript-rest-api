@@ -4,7 +4,7 @@ import supertest from "supertest";
 import { IUserInput } from "../models/user.model";
 import mongoose from "mongoose";
 import { createServer } from "../utils/server";
-import { ISession, ISessionInput } from "../models/session.model";
+import { ISessionInput } from "../models/session.model";
 import { createUserSessionHanlder } from "../controllers/session.controller";
 
 const app = createServer();
@@ -45,6 +45,9 @@ const mockSessionPayload: IMockSessionInput = {
   updatedAt: new Date(),
   __v: 0,
 };
+// mock user service to avoid TS errors on mock functions
+jest.mock("../services/user.service");
+const mockedUserService = jest.mocked(UserService);
 
 describe("User", () => {
   // user registration
@@ -54,8 +57,7 @@ describe("User", () => {
     describe("given the username and password are valid", () => {
       it("should return the user payload", async () => {
         const createUserServiceMock = jest
-          .spyOn(UserService, "createUser")
-          //@ts-ignore
+          .spyOn(mockedUserService, "createUser")
           .mockReturnValueOnce(mockUserPayload);
 
         const { statusCode, body } = await supertest(app).post("/api/users").send(mockUserInput);
@@ -69,8 +71,8 @@ describe("User", () => {
     describe("given the passwords do not match", () => {
       it("should return 400", async () => {
         const createUserServiceMock = jest
-          .spyOn(UserService, "createUser")
-          //@ts-ignore
+          .spyOn(mockedUserService, "createUser")
+
           .mockReturnValueOnce(mockUserPayload);
 
         const { statusCode, body } = await supertest(app)
